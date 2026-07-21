@@ -8,13 +8,13 @@ const { loadConfig, checkScope, CONFIG_FILENAME } = require('./scope');
 const { render, renderJson } = require('./report');
 const pkg = require('../package.json');
 
-const HELP = `agent-audit — audit AI-agent diffs for slop and scope violations
+const HELP = `hallucinot — audit AI-agent diffs for slop and scope violations
 
 Usage:
-  agent-audit [check] [options]     audit staged changes (or working tree)
-  agent-audit init                  create a ${CONFIG_FILENAME} config
-  agent-audit install-hook          install as a git pre-commit hook
-  agent-audit rules                 list all detection rules
+  hallucinot [check] [options]     audit staged changes (or working tree)
+  hallucinot init                  create a ${CONFIG_FILENAME} config
+  hallucinot install-hook          install as a git pre-commit hook
+  hallucinot rules                 list all detection rules
 
 Options:
   --range <a..b>   audit a commit range instead (e.g. main..HEAD)
@@ -45,7 +45,7 @@ function parseArgs(argv) {
   if (positional.length) {
     const cmd = positional[0];
     if (['check', 'init', 'install-hook', 'rules'].includes(cmd)) opts.command = cmd;
-    else if (cmd.includes('..')) opts.range = cmd; // allow "agent-audit main..HEAD"
+    else if (cmd.includes('..')) opts.range = cmd; // allow "hallucinot main..HEAD"
     else throw new Error(`Unknown command: ${cmd}`);
   }
   return opts;
@@ -106,16 +106,16 @@ function cmdInstallHook() {
   // Resolve the real hooks dir so this works with worktrees and submodules.
   const hooksDir = git(['rev-parse', '--git-path', 'hooks']).trim();
   const hookFile = path.resolve(hooksDir, 'pre-commit');
-  const script = '#!/bin/sh\n# Installed by agent-audit. Audits staged changes before every commit.\nnpx --no-install agent-audit check || npx agent-audit check\n';
+  const script = '#!/bin/sh\n# Installed by hallucinot. Audits staged changes before every commit.\nnpx --no-install hallucinot check || npx hallucinot check\n';
   if (fs.existsSync(hookFile)) {
     const existing = fs.readFileSync(hookFile, 'utf8');
-    if (existing.includes('agent-audit')) {
+    if (existing.includes('hallucinot')) {
       process.stdout.write('Pre-commit hook already installed.\n');
       return 0;
     }
     process.stderr.write(
       `A pre-commit hook already exists at ${hookFile}.\n` +
-        'Add this line to it manually:\n  npx agent-audit check\n'
+        'Add this line to it manually:\n  npx hallucinot check\n'
     );
     return 1;
   }
@@ -150,7 +150,7 @@ function main(argv) {
     else code = cmdCheck(opts);
     process.exit(code);
   } catch (err) {
-    process.stderr.write(`agent-audit: ${err.message}\n`);
+    process.stderr.write(`hallucinot: ${err.message}\n`);
     process.exit(2);
   }
 }

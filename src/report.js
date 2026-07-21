@@ -43,7 +43,7 @@ function render(findings, meta, opts = {}) {
   const lines = [];
   const { score, grade } = scoreFindings(findings);
 
-  lines.push(c.bold(`agent-audit v${meta.version}`) + c.dim(` — auditing ${meta.source}`));
+  lines.push(c.bold(`hallucinot v${meta.version}`) + c.dim(` — auditing ${meta.source}`));
   lines.push('');
 
   if (!findings.length) {

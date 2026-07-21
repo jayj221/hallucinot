@@ -18,5 +18,5 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm test
       # The tool should also pass its own audit. Eating our own dog food.
-      - run: node bin/agent-audit.js --range HEAD~1..HEAD --warn-only
+      - run: node bin/hallucinot.js --range HEAD~1..HEAD --warn-only
         if: github.event_name == 'push'

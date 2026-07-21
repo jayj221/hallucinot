@@ -1,7 +1,7 @@
 'use strict';
 
 // Scope enforcement: the part of the audit that asks "was the agent even
-// allowed to touch this file?". Configured via .agent-audit.json in the
+// allowed to touch this file?". Configured via .hallucinot.json in the
 // repo root. Sensible defaults apply even with no config file, because
 // some paths (CI workflows, env files, database migrations) should never
 // change silently.
@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const { matchAny } = require('./glob');
 
-const CONFIG_FILENAME = '.agent-audit.json';
+const CONFIG_FILENAME = '.hallucinot.json';
 
 // Paths flagged by default. Users can extend or replace via config.
 const DEFAULT_PROTECTED = [
