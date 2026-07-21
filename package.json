@@ -1,0 +1,44 @@
+{
+  "name": "agent-audit",
+  "version": "0.1.0",
+  "description": "Your AI agent says it's done. agent-audit checks if it's lying. Catches stubs, gamed tests, deleted assertions, and out-of-scope edits in AI-generated diffs.",
+  "bin": {
+    "agent-audit": "bin/agent-audit.js"
+  },
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "ai",
+    "agents",
+    "code-review",
+    "git-hook",
+    "claude-code",
+    "cursor",
+    "copilot",
+    "slop",
+    "diff",
+    "ci",
+    "code-quality"
+  ],
+  "author": "Jayant Joshi (https://github.com/jayj221)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jayj221/agent-audit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jayj221/agent-audit/issues"
+  },
+  "homepage": "https://github.com/jayj221/agent-audit#readme"
+}
