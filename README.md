@@ -10,14 +10,14 @@
 
 AI coding agents have a well-documented habit: they claim a task is complete when it isn't. They leave `// TODO: implement` stubs, disable failing tests instead of fixing them, quietly delete assertions until the suite goes green, and wander into files nobody asked them to touch.
 
-Linters can't catch most of this, because linters read files as they exist *now*. The worst agent tricks live in what was **removed** — and only the diff knows that.
+Linters can't catch most of this, because linters read files as they exist *now*. The worst agent tricks live in what was **removed**, and only the diff knows that.
 
 `hallucinot` reads the diff.
 
 ```
 $ npx hallucinot
 
-hallucinot v0.1.0 — auditing staged changes
+hallucinot v0.1.0, auditing staged changes
 
 src/auth.js
   ✗ error  Placeholder comment where real code should be [stub-left-behind]:2
@@ -65,7 +65,7 @@ Suppose your agent "fixes" a failing test suite like this:
  });
 ```
 
-Run any file-based linter on the result and it sees a perfectly clean test file. The evidence — two deleted assertions — no longer exists in the file. It only exists in the diff. That's the gap `hallucinot` covers:
+Run any file-based linter on the result and it sees a perfectly clean test file. The evidence, two deleted assertions, no longer exists in the file. It only exists in the diff. That's the gap `hallucinot` covers:
 
 | | File-based linters | hallucinot |
 |---|---|---|
@@ -117,10 +117,10 @@ Tell the agent where it's allowed to work, then hold it to that. Create `.halluc
 }
 ```
 
-- `scope.allow` — if non-empty, any changed file outside these globs is an **error**. Set it per task: working on billing? Allow `src/billing/**` and nothing else.
-- `scope.deny` — always an error, even inside the allow list.
-- `protected` — globs that **warn** when touched. `null` uses the built-in defaults: `.env*`, `**/migrations/**`, `.github/workflows/**`, private keys.
-- `ignoreRules` — silence rules that don't fit your project.
+- `scope.allow`, if non-empty, any changed file outside these globs is an **error**. Set it per task: working on billing? Allow `src/billing/**` and nothing else.
+- `scope.deny`, always an error, even inside the allow list.
+- `protected`, globs that **warn** when touched. `null` uses the built-in defaults: `.env*`, `**/migrations/**`, `.github/workflows/**`, private keys.
+- `ignoreRules`, silence rules that don't fit your project.
 
 No config file? Slop detection and the default protections still run. Config is only needed for per-task scoping.
 
@@ -130,7 +130,7 @@ No config file? Slop detection and the default protections still run. Config is 
 npx hallucinot install-hook
 ```
 
-Every commit is audited automatically; commits with error-level findings are blocked. Bypass intentionally with `git commit --no-verify` — the point is making slop a conscious choice instead of a silent default.
+Every commit is audited automatically; commits with error-level findings are blocked. Bypass intentionally with `git commit --no-verify`, the point is making slop a conscious choice instead of a silent default.
 
 ## In CI
 
@@ -162,11 +162,11 @@ Exit codes: `0` clean, `1` findings at failing severity, `2` git/usage error. Ad
 
 ## Honest limitations
 
-This is pattern-based analysis, and patterns have edge cases. A legitimately removed assertion (deleting a dead test on purpose) will flag — that's by design, the tool asks you to *confirm* deletions, not forbid them. Silence any rule via `ignoreRules`, skip one commit with `--no-verify`, or use `--warn-only` in reporting mode. If you hit a false positive that seems wrong rather than cautious, [open an issue](https://github.com/jayj221/hallucinot/issues) with the diff snippet.
+This is pattern-based analysis, and patterns have edge cases. A legitimately removed assertion (deleting a dead test on purpose) will flag, that's by design, the tool asks you to *confirm* deletions, not forbid them. Silence any rule via `ignoreRules`, skip one commit with `--no-verify`, or use `--warn-only` in reporting mode. If you hit a false positive that seems wrong rather than cautious, [open an issue](https://github.com/jayj221/hallucinot/issues) with the diff snippet.
 
 ## Contributing
 
-Rules live in [`src/rules.js`](src/rules.js) — each is a small object with an id, severity, pattern, and message, so adding a detection is usually a few lines plus a test. `npm test` runs the suite (Node's built-in test runner, no dev dependencies either).
+Rules live in [`src/rules.js`](src/rules.js), each is a small object with an id, severity, pattern, and message, so adding a detection is usually a few lines plus a test. `npm test` runs the suite (Node's built-in test runner, no dev dependencies either).
 
 ## License
 
