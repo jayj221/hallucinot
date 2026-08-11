@@ -8,6 +8,8 @@
 [![zero dependencies](https://img.shields.io/badge/dependencies-0-blue.svg)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+![hallucinot catching a gamed test diff](assets/hallucinot-demo.gif)
+
 AI coding agents have a well-documented habit: they claim a task is complete when it isn't. They leave `// TODO: implement` stubs, disable failing tests instead of fixing them, quietly delete assertions until the suite goes green, and wander into files nobody asked them to touch.
 
 Linters can't catch most of this, because linters read files as they exist *now*. The worst agent tricks live in what was **removed**, and only the diff knows that.
