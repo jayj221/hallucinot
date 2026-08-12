@@ -10,6 +10,8 @@
 
 ![hallucinot catching a gamed test diff](assets/hallucinot-demo.gif)
 
+<sub>A staged diff where the agent left placeholder code and swapped two real test assertions for an always-true one — caught in milliseconds, no LLM calls.</sub>
+
 AI coding agents have a well-documented habit: they claim a task is complete when it isn't. They leave `// TODO: implement` stubs, disable failing tests instead of fixing them, quietly delete assertions until the suite goes green, and wander into files nobody asked them to touch.
 
 Linters can't catch most of this, because linters read files as they exist *now*. The worst agent tricks live in what was **removed**, and only the diff knows that.
