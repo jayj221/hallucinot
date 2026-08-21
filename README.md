@@ -128,6 +128,23 @@ Tell the agent where it's allowed to work, then hold it to that. Create `.halluc
 
 No config file? Slop detection and the default protections still run. Config is only needed for per-task scoping.
 
+## Suppressing a single finding
+
+Sometimes a flag is correct but the change is intentional, a dead assertion you are deliberately removing, a placeholder you are knowingly committing. `ignoreRules` silences a rule across the whole repo and `--no-verify` skips an entire commit; neither is right when you want to wave through exactly one line and keep the rule active everywhere else. Use an inline directive, the same convention eslint uses:
+
+```js
+expect(response.ok).toBe(true); // hallucinot-disable-line
+
+// hallucinot-disable-next-line weakened-assertions
+expect(legacyFlag).toBe(false);
+```
+
+- `hallucinot-disable-line` suppresses findings on that line; `hallucinot-disable-next-line` suppresses the line below it.
+- List one or more rule ids to scope the suppression; with none listed, every rule on the line is waved through.
+- Anything after `--` is treated as a description and ignored, so you can leave a reason: `// hallucinot-disable-line stub-left-behind -- generated file, edited by hand next PR`.
+
+Because hallucinot only sees the diff, the directive has to be part of the changed lines to take effect, which is exactly where you would be writing it anyway.
+
 ## As a pre-commit hook
 
 ```sh
@@ -166,7 +183,7 @@ Exit codes: `0` clean, `1` findings at failing severity, `2` git/usage error. Ad
 
 ## Honest limitations
 
-This is pattern-based analysis, and patterns have edge cases. A legitimately removed assertion (deleting a dead test on purpose) will flag, that's by design, the tool asks you to *confirm* deletions, not forbid them. Silence any rule via `ignoreRules`, skip one commit with `--no-verify`, or use `--warn-only` in reporting mode. If you hit a false positive that seems wrong rather than cautious, [open an issue](https://github.com/jayj221/hallucinot/issues) with the diff snippet.
+This is pattern-based analysis, and patterns have edge cases. A legitimately removed assertion (deleting a dead test on purpose) will flag, that's by design, the tool asks you to *confirm* deletions, not forbid them. Wave through one intentional line with an [inline directive](#suppressing-a-single-finding), silence a rule repo-wide via `ignoreRules`, skip one commit with `--no-verify`, or use `--warn-only` in reporting mode. If you hit a false positive that seems wrong rather than cautious, [open an issue](https://github.com/jayj221/hallucinot/issues) with the diff snippet.
 
 ## Contributing
 

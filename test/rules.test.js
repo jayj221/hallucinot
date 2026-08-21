@@ -100,6 +100,46 @@ test('ignoreRules silences a rule', () => {
   assert.ok(!ruleIds(findings).includes('debug-leftover'));
 });
 
+test('disable-line suppresses a finding on the same line', () => {
+  const f = fileWith('src/a.js', ['console.log("x"); // hallucinot-disable-line']);
+  assert.deepStrictEqual(runRules([f]), []);
+});
+
+test('disable-next-line suppresses the following line', () => {
+  const f = fileWith('test/a.test.js', [
+    '// hallucinot-disable-next-line trivial-assertion',
+    'expect(true).toBe(true);',
+  ]);
+  assert.ok(!ruleIds(runRules([f])).includes('trivial-assertion'));
+});
+
+test('rule-scoped disable leaves other findings intact', () => {
+  // One prod line trips two rules; disabling only one keeps the other.
+  const f = fileWith('src/a.js', ['jest.mock("./db"); console.log("x"); // hallucinot-disable-line debug-leftover']);
+  const ids = ruleIds(runRules([f]));
+  assert.ok(!ids.includes('debug-leftover'));
+  assert.ok(ids.includes('mock-in-prod'));
+});
+
+test('bare disable suppresses every rule on the line', () => {
+  const f = fileWith('src/a.js', ['console.log("x"); // TODO fix // hallucinot-disable-line']);
+  assert.deepStrictEqual(runRules([f]), []);
+});
+
+test('an unknown rule id in a directive does not suppress real findings', () => {
+  const f = fileWith('src/a.js', ['console.log("x"); // hallucinot-disable-line not-a-real-rule']);
+  assert.ok(ruleIds(runRules([f])).includes('debug-leftover'));
+});
+
+test('disable-next-line only reaches the immediately following line', () => {
+  const f = fileWith('src/a.js', [
+    '// hallucinot-disable-next-line debug-leftover',
+    'const ok = 1;',
+    'console.log("still flagged");',
+  ]);
+  assert.ok(ruleIds(runRules([f])).includes('debug-leftover'));
+});
+
 test('clean diff produces no findings', () => {
   const f = fileWith('src/a.js', ['const sum = (a, b) => a + b;', 'module.exports = { sum };']);
   assert.deepStrictEqual(runRules([f]), []);

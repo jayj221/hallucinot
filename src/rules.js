@@ -115,6 +115,64 @@ const BLOCK_RULES = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Inline suppression.
+//
+// A rule can fire on something the author did on purpose (deliberately deleting
+// a dead assertion, a stub that is genuinely a placeholder for a tracked task).
+// `ignoreRules` silences a rule across the whole repo and `--no-verify` skips an
+// entire commit; neither lets you wave through one specific line while keeping
+// the rule active everywhere else. These directives do, mirroring the eslint
+// convention developers already know:
+//
+//   expect(true).toBe(true); // hallucinot-disable-line
+//   // hallucinot-disable-next-line trivial-assertion
+//   expect(true).toBe(true);
+//
+// With no rule ids listed, every finding on the target line is suppressed. With
+// ids, only those rules are; an unknown id simply matches nothing. As in eslint,
+// anything after `--` is a human description and is ignored. Because everything
+// is diff-scoped, the directive itself must be part of the added lines to apply.
+const DISABLE_RE = /hallucinot-disable-(next-line|line)(?![\w-])(.*)/i;
+
+function parseDisableDirective(text) {
+  const m = DISABLE_RE.exec(text);
+  if (!m) return null;
+  const next = m[1].toLowerCase() === 'next-line';
+  let rest = m[2];
+  const dash = rest.indexOf('--'); // everything past `--` is a description
+  if (dash !== -1) rest = rest.slice(0, dash);
+  const rules = (rest.match(/[a-z][a-z-]+/gi) || []).map((s) => s.toLowerCase());
+  return { next, rules }; // rules: [] means suppress every rule on the line
+}
+
+// Map each targeted line to the rules suppressed there. Value '*' = all rules.
+function collectSuppressions(files) {
+  const map = new Map();
+  for (const file of files) {
+    for (const { line, text } of file.added) {
+      const d = parseDisableDirective(text);
+      if (!d) continue;
+      const key = `${file.path}\n${d.next ? line + 1 : line}`;
+      if (!d.rules.length) {
+        map.set(key, '*');
+        continue;
+      }
+      const existing = map.get(key);
+      if (existing === '*') continue;
+      const set = existing || new Set();
+      for (const r of d.rules) set.add(r);
+      map.set(key, set);
+    }
+  }
+  return map;
+}
+
+function isSuppressed(map, file, line, rule) {
+  const s = map.get(`${file}\n${line}`);
+  return s === '*' || (s instanceof Set && s.has(rule));
+}
+
 function matchesRule(rule, text) {
   if (rule.pattern.test(text)) return true;
   if (rule.altPatterns) return rule.altPatterns.some((p) => p.test(text));
@@ -135,9 +193,12 @@ function ruleApplies(rule, path) {
  */
 function runRules(files, opts = {}) {
   const ignore = new Set(opts.ignoreRules || []);
+  const suppress = collectSuppressions(files);
   const findings = [];
   const add = (f) => {
-    if (!ignore.has(f.rule)) findings.push(f);
+    if (ignore.has(f.rule)) return;
+    if (isSuppressed(suppress, f.file, f.line, f.rule)) return;
+    findings.push(f);
   };
 
   for (const file of files) {
