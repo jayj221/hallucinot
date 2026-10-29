@@ -12,6 +12,8 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   intentional finding without silencing a rule repo-wide (`ignoreRules`) or
   bypassing the whole commit (`--no-verify`). Optional rule ids scope the
   suppression; text after `--` is treated as a description and ignored.
+- Directory globs with a trailing slash (`dist/`) now match everything under
+  that directory, the way `.gitignore` reads them.
 
 ### Fixed
 - `--range` with no value now exits with an error instead of silently

@@ -33,3 +33,9 @@ test('regex metacharacters in paths are treated literally', () => {
   assert.ok(matchGlob('a+b/*.js', 'a+b/x.js'));
   assert.ok(!matchGlob('a+b/*.js', 'aab/x.js'));
 });
+
+test('trailing slash matches everything under that directory', () => {
+  assert.ok(matchGlob('dist/', 'dist/a.js'));
+  assert.ok(matchGlob('dist/', 'dist/nested/b.js'));
+  assert.ok(!matchGlob('dist/', 'distro/a.js'));
+});

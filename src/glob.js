@@ -4,6 +4,8 @@
 // Supports: ** (any depth), * (within a segment), ? (single char).
 // A pattern without a slash matches against the basename as well as the
 // full path, which is what people intuitively expect from ".env*".
+// A trailing slash means "this directory and everything under it", as in
+// .gitignore, so "dist/" behaves like "dist/**".
 
 function globToRegExp(pattern) {
   let re = '';
@@ -37,6 +39,7 @@ function globToRegExp(pattern) {
 }
 
 function matchGlob(pattern, filePath) {
+  if (pattern.endsWith('/')) pattern += '**';
   const rx = globToRegExp(pattern);
   if (rx.test(filePath)) return true;
   // Slash-free patterns also match the basename anywhere in the tree.
