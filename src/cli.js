@@ -32,7 +32,11 @@ function parseArgs(argv) {
   const positional = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--range') opts.range = argv[++i];
+    if (a === '--range') {
+      const v = argv[++i];
+      if (!v || v.startsWith('-')) throw new Error('--range needs a value, e.g. --range main..HEAD');
+      opts.range = v;
+    }
     else if (a === '--json') opts.json = true;
     else if (a === '--strict') opts.strict = true;
     else if (a === '--warn-only') opts.warnOnly = true;

@@ -13,6 +13,10 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   bypassing the whole commit (`--no-verify`). Optional rule ids scope the
   suppression; text after `--` is treated as a description and ignored.
 
+### Fixed
+- `--range` with no value now exits with an error instead of silently
+  auditing the working tree.
+
 ## [0.1.0]
 
 ### Added
