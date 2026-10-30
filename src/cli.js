@@ -8,7 +8,7 @@ const { loadConfig, checkScope, CONFIG_FILENAME } = require('./scope');
 const { render, renderJson } = require('./report');
 const pkg = require('../package.json');
 
-const HELP = `hallucinot — audit AI-agent diffs for slop and scope violations
+const HELP = `hallucinot: audit AI-agent diffs for slop and scope violations
 
 Usage:
   hallucinot [check] [options]     audit staged changes (or working tree)
